@@ -41,6 +41,23 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                 ),
+                Padding(
+                  padding: EdgeInsets.only(left: sizeWidth * 0.03),
+                  child: Obx(
+                    () => Container(
+                      padding: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: primaryColor,
+                        borderRadius: BorderRadius.circular(sizeHeight * 0.01),
+                      ),
+                      child: TextGlobalWidget(
+                        text: "${authController.currentUser.value?.role}",
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
                 const Spacer(),
                 GestureDetector(
                   onTap: () async {
