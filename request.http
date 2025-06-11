@@ -1,0 +1,104 @@
+### BOLEH DI TEST PAKAI REST CLIENT EXTENSION DI VSCODE
+
+### Variables
+@baseUrl = http://127.0.0.1:8000/api
+@contentType = application/json
+
+### 1. Register User
+POST {{baseUrl}}/register
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "password123",
+  "password_confirmation": "password123"
+}
+
+### 2. Login User
+POST {{baseUrl}}/login
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "email": "ifqy2@test.com",
+  "password": "torabika"
+}
+
+### 3. Get Published Events (Public)
+GET {{baseUrl}}/events/published
+Accept: {{contentType}}
+
+### 4. Get Specific Event (Public)
+GET {{baseUrl}}/events/1
+Accept: {{contentType}}
+
+### 5. Get User Profile (Protected - requires token)
+GET {{baseUrl}}/profile
+Accept: {{contentType}}
+Authorization: Bearer 25|c02mheylHsaFxJjl2sSYrfmYSVbSFcEqchGOyVME384b8125
+
+### 6. Get User Profile Alternative (Protected)
+GET {{baseUrl}}/user/profile
+Accept: {{contentType}}
+Authorization: Bearer 25|c02mheylHsaFxJjl2sSYrfmYSVbSFcEqchGOyVME384b8125
+
+### 7. Update User Profile (Protected)
+PUT {{baseUrl}}/user/profile
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+Authorization: Bearer 2|NSO2mthMZ6nDZbQghXIqZIbyfxmuEufgKisA1kYba1987eba
+
+{
+  "name": "John Updated",
+  "email": "john.updated@example.com"
+}
+
+### 8. Create Event (Protected)
+POST {{baseUrl}}/events
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+Authorization: Bearer 5|8bVE4udSemqAWMU30gHyRukJGvoPnbfnT0XwNSQ07acbc745
+
+{
+  "title": "Test Event",
+  "description": "This is a test event",
+  "start_date": "2025-07-01 09:00:00",
+  "end_date": "2025-07-01 17:00:00",
+  "location": "Test Location",
+  "max_participants": 100,
+  "image": "file.jpg",
+  "status": "published"
+}
+
+### 9. Get My Events (Protected)
+GET {{baseUrl}}/events/my-events
+Accept: {{contentType}}
+Authorization: Bearer 2|NSO2mthMZ6nDZbQghXIqZIbyfxmuEufgKisA1kYba1987eba
+
+### 10. Register for Event (Protected)
+POST {{baseUrl}}/events/1/register
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+Authorization: Bearer 2|NSO2mthMZ6nDZbQghXIqZIbyfxmuEufgKisA1kYba1987eba
+
+### 11. Check Registration Status (Protected)
+GET {{baseUrl}}/events/1/check-registration
+Accept: {{contentType}}
+Authorization: Bearer 2|NSO2mthMZ6nDZbQghXIqZIbyfxmuEufgKisA1kYba1987eba
+
+### 12. Get My Registrations (Protected)
+GET {{baseUrl}}/my-registrations
+Accept: {{contentType}}
+Authorization: Bearer 2|NSO2mthMZ6nDZbQghXIqZIbyfxmuEufgKisA1kYba1987eba
+
+### 13. Logout (Protected)
+POST {{baseUrl}}/logout
+Accept: {{contentType}}
+Authorization: Bearer 2|NSO2mthMZ6nDZbQghXIqZIbyfxmuEufgKisA1kYba1987eba
+
+### 14. Get All Users (Admin Only - Protected)
+GET {{baseUrl}}/users
+Accept: {{contentType}}
+Authorization: Bearer 5|8bVE4udSemqAWMU30gHyRukJGvoPnbfnT0XwNSQ07acbc745
