@@ -1,4 +1,5 @@
 import 'package:get/route_manager.dart';
+import 'package:sistem_informasi/pages/event/event_detail.dart';
 import 'package:sistem_informasi/pages/home/binding/home_binding.dart';
 import 'package:sistem_informasi/pages/home/home.dart';
 import 'package:sistem_informasi/pages/splash/splash.dart';
@@ -8,13 +9,27 @@ class AppRoutes {
   static const String home = '/home';
   static const String login = '/login';
   static const String register = '/register';
-  static const String eventDetail = '/event-detail';
+  static const String eventDetail = '/event/:id';
   static const String createEvent = '/create-event';
   static const String editEvent = '/edit-event';
 
   static final routes = [
-    GetPage(name: splash, page: () => const SplashPage()),
-    GetPage(name: home, page: () => const HomePage(), binding: HomeBinding()),
+    GetPage(
+      name: splash,
+      page: () => const SplashPage(),
+      transition: Transition.leftToRight,
+    ),
+    GetPage(
+      name: home,
+      page: () => const HomePage(),
+      binding: HomeBinding(),
+      transition: Transition.leftToRight,
+    ),
+    GetPage(
+      name: eventDetail,
+      page: () => const EventDetailPage(),
+      transition: Transition.leftToRight,
+    ),
     // GetPage(name: eventDetail, page: () => const EventDetailPage()),
     // GetPage(name: createEvent, page: () => const CreateEventPage()),
     // GetPage(name: editEvent, page: () => const EditEventPage()),
