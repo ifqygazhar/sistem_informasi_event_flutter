@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sistem_informasi/api/api.dart';
 import 'package:sistem_informasi/app_routes.dart';
 import 'package:sistem_informasi/models/event.dart';
 import 'package:sistem_informasi/pages/auth/controller/auth_controller.dart';
@@ -130,8 +131,102 @@ class EventWidget extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: sizeWidth * 0.03),
               child: GestureDetector(
-                onTap: () {
-                  // Handle register tap
+                onTap: () async {
+                  if (!authController.isLoggedIn.value) {
+                    Get.snackbar(
+                      "Login Required",
+                      "Please login first to register for events",
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.orange,
+                      colorText: Colors.white,
+                      overlayBlur: 0,
+                    );
+                    return;
+                  }
+
+                  if (event.hasReachedCapacity) {
+                    Get.snackbar(
+                      "Registration Closed",
+                      "This event has reached its capacity.",
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                      overlayBlur: 0,
+                    );
+                    return;
+                  }
+
+                  try {
+                    // Show loading
+                    Get.dialog(
+                      const Center(child: CircularProgressIndicator()),
+                      barrierDismissible: false,
+                    );
+
+                    await ApiService.registerForEvent(event.id);
+
+                    // Close loading dialog
+                    Get.back();
+
+                    // Show success message
+                    Get.snackbar(
+                      "Registration Successful",
+                      "You have successfully registered for the event.",
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.green,
+                      colorText: Colors.white,
+                      overlayBlur: 0,
+                      icon: const Icon(Icons.check_circle, color: Colors.white),
+                    );
+                  } catch (e) {
+                    if (Get.isDialogOpen == true) {
+                      Get.back();
+                    }
+
+                    // Extract clean error message
+                    String errorMessage = e.toString();
+                    if (errorMessage.contains('Exception: ')) {
+                      errorMessage = errorMessage.replaceAll('Exception: ', '');
+                    }
+                    if (errorMessage.contains('Event registration error: ')) {
+                      errorMessage = errorMessage.replaceAll(
+                        'Event registration error: ',
+                        '',
+                      );
+                    }
+                    if (errorMessage.contains('Exception: ')) {
+                      errorMessage = errorMessage.replaceAll('Exception: ', '');
+                    }
+
+                    // Show appropriate error message
+                    Color backgroundColor = Colors.red;
+                    IconData iconData = Icons.error;
+
+                    if (errorMessage.toLowerCase().contains(
+                          'sudah terdaftar',
+                        ) ||
+                        errorMessage.toLowerCase().contains(
+                          'already registered',
+                        )) {
+                      backgroundColor = Colors.orange;
+                      iconData = Icons.info;
+                    } else if (errorMessage.toLowerCase().contains('network') ||
+                        errorMessage.toLowerCase().contains('connection')) {
+                      backgroundColor = Colors.blue;
+                      iconData = Icons.wifi_off;
+                    }
+
+                    Get.snackbar(
+                      "Registration Failed",
+                      errorMessage,
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: backgroundColor,
+                      colorText: Colors.white,
+                      overlayBlur: 0,
+                      icon: Icon(iconData, color: Colors.white),
+                      duration: const Duration(seconds: 4),
+                    );
+                  }
                 },
                 child: Container(
                   height: sizeHeight * 0.04,

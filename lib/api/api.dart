@@ -178,13 +178,31 @@ class ApiService {
         headers: await getHeaders(requireAuth: true),
       );
 
-      if (response.statusCode != 200 && response.statusCode != 201) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Registration successful
+        return;
+      } else {
+        // Parse error response
         final errorData = json.decode(response.body);
-        throw Exception(errorData['message'] ?? 'Registration failed');
+        String errorMessage = 'Registration failed';
+
+        if (errorData['message'] != null) {
+          errorMessage = errorData['message'];
+        } else if (errorData['error'] != null) {
+          errorMessage = errorData['error'];
+        }
+
+        throw Exception(errorMessage);
       }
     } catch (e) {
       debugPrint('Error registering for event: $e');
-      throw Exception('Event registration error: $e');
+
+      // Check if it's already our custom exception
+      if (e.toString().contains('Exception: ')) {
+        rethrow; // Keep the original message
+      } else {
+        throw Exception('Network error: Please check your connection');
+      }
     }
   }
 }
