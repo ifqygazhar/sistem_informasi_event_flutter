@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sistem_informasi/app_routes.dart';
+import 'package:sistem_informasi/pages/auth/controller/auth_controller.dart';
 import 'package:sistem_informasi/pages/home/widgets/banner.dart';
 import 'package:sistem_informasi/pages/home/widgets/event.dart';
 import 'package:sistem_informasi/pages/home/widgets/manajement_only_admin.dart';
@@ -17,6 +19,7 @@ class HomePage extends StatelessWidget {
     final sizeHeight = MediaQuery.of(context).size.height;
     final sizeWidth = MediaQuery.of(context).size.width;
     final controller = Get.find<HomeController>();
+    final authController = Get.find<AuthController>();
 
     return Scaffold(
       body: SafeArea(
@@ -27,34 +30,65 @@ class HomePage extends StatelessWidget {
               children: [
                 Padding(
                   padding: EdgeInsets.only(left: sizeWidth * 0.03),
-                  child: TextGlobalWidget(
-                    text: "Belum login",
-                    fontSize: 14,
-                    fontColor: primaryColor,
+                  child: Obx(
+                    () => TextGlobalWidget(
+                      text:
+                          authController.isLoggedIn.value == false
+                              ? "Belum login"
+                              : "Halo, ${authController.currentUser.value?.name ?? 'User'}",
+                      fontSize: 14,
+                      fontColor: primaryColor,
+                    ),
                   ),
                 ),
                 const Spacer(),
-                Container(
-                  margin: EdgeInsets.only(right: sizeWidth * 0.03),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: primaryColor,
-                    borderRadius: BorderRadius.circular(sizeHeight * 0.01),
-                  ),
-                  child: Row(
-                    children: [
-                      TextGlobalWidget(text: "Login", fontSize: 14),
-                      const Icon(Icons.login, color: Colors.white),
-                    ],
+                GestureDetector(
+                  onTap: () async {
+                    if (authController.isLoggedIn.value) {
+                      await authController.logout();
+                    } else {
+                      Get.toNamed(AppRoutes.login);
+                    }
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(right: sizeWidth * 0.03),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      borderRadius: BorderRadius.circular(sizeHeight * 0.01),
+                    ),
+                    child: Obx(
+                      () => Row(
+                        children: [
+                          TextGlobalWidget(
+                            text:
+                                authController.isLoggedIn.value == true
+                                    ? "Logout"
+                                    : "Login",
+                            fontSize: 14,
+                          ),
+                          SizedBox(width: sizeWidth * 0.01),
+                          Icon(
+                            authController.isLoggedIn.value == true
+                                ? Icons.logout
+                                : Icons.login,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
             BannerWidget(sizeHeight: sizeHeight, sizeWidth: sizeWidth),
-            ManajementOnlyAdminWidget(
-              sizeHeight: sizeHeight,
-              sizeWidth: sizeWidth,
-            ),
+            authController.isLoggedIn.value == true &&
+                    authController.isAdmin.value == true
+                ? ManajementOnlyAdminWidget(
+                  sizeHeight: sizeHeight,
+                  sizeWidth: sizeWidth,
+                )
+                : const SizedBox.shrink(),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: sizeWidth * 0.03),
               child: TextGlobalWidget(

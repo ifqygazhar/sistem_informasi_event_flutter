@@ -1,4 +1,7 @@
 import 'package:get/route_manager.dart';
+import 'package:sistem_informasi/pages/auth/binding/auth_binding.dart';
+import 'package:sistem_informasi/pages/auth/login.dart';
+import 'package:sistem_informasi/pages/auth/register.dart';
 import 'package:sistem_informasi/pages/event/event_detail.dart';
 import 'package:sistem_informasi/pages/home/binding/home_binding.dart';
 import 'package:sistem_informasi/pages/home/home.dart';
@@ -22,7 +25,7 @@ class AppRoutes {
     GetPage(
       name: home,
       page: () => const HomePage(),
-      binding: HomeBinding(),
+      bindings: [HomeBinding(), AuthBinding()],
       transition: Transition.rightToLeft,
     ),
     GetPage(
@@ -30,10 +33,18 @@ class AppRoutes {
       page: () => const EventDetailPage(),
       transition: Transition.rightToLeft,
     ),
-    // GetPage(name: eventDetail, page: () => const EventDetailPage()),
+    GetPage(
+      name: login,
+      page: () => const LoginPage(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: register,
+      page: () => const RegisterPage(),
+      transition: Transition.rightToLeft,
+    ),
+
     // GetPage(name: createEvent, page: () => const CreateEventPage()),
     // GetPage(name: editEvent, page: () => const EditEventPage()),
-    // GetPage(name: login, page: () => const LoginPage()),
-    // GetPage(name: register, page: () => const RegisterPage()),
   ];
 }

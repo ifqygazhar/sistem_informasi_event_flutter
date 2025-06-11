@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sistem_informasi/app_routes.dart';
 import 'package:sistem_informasi/models/event.dart';
+import 'package:sistem_informasi/pages/auth/controller/auth_controller.dart';
 import 'package:sistem_informasi/utils/colors.dart';
 import 'package:sistem_informasi/utils/text.dart';
 
@@ -19,6 +20,8 @@ class EventWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authController = Get.find<AuthController>();
+
     return GestureDetector(
       onTap: () {
         Get.toNamed(AppRoutes.eventDetail, arguments: event);
@@ -139,12 +142,21 @@ class EventWidget extends StatelessWidget {
                         event.hasReachedCapacity ? Colors.grey : Colors.white,
                     borderRadius: BorderRadius.circular(sizeHeight * 0.008),
                   ),
-                  child: TextGlobalWidget(
-                    text: event.hasReachedCapacity ? "Full" : "Register",
-                    fontSize: 14,
-                    fontColor:
-                        event.hasReachedCapacity ? Colors.white : primaryColor,
-                    fontWeight: FontWeight.bold,
+                  child: Obx(
+                    () => TextGlobalWidget(
+                      text:
+                          (authController.isLoggedIn.value == true)
+                              ? event.hasReachedCapacity
+                                  ? "Full"
+                                  : "Register"
+                              : "Login or register first",
+                      fontSize: 14,
+                      fontColor:
+                          event.hasReachedCapacity
+                              ? Colors.white
+                              : primaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

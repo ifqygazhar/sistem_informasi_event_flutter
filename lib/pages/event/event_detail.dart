@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sistem_informasi/models/event.dart';
+import 'package:sistem_informasi/pages/auth/controller/auth_controller.dart';
 import 'package:sistem_informasi/utils/colors.dart';
 import 'package:sistem_informasi/utils/date_format.dart';
 import 'package:sistem_informasi/utils/text.dart';
@@ -14,6 +15,7 @@ class EventDetailPage extends StatelessWidget {
     final Event event = Get.arguments as Event;
     final double sizeHeight = MediaQuery.of(context).size.height;
     final double sizeWidth = MediaQuery.of(context).size.width;
+    final authController = Get.find<AuthController>();
 
     return Scaffold(
       appBar: AppBar(
@@ -39,7 +41,7 @@ class EventDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Event Image
-            Container(
+            SizedBox(
               height: sizeHeight * 0.3,
               width: double.infinity,
               child: CachedNetworkImage(
@@ -313,6 +315,17 @@ class EventDetailPage extends StatelessWidget {
         ),
         child: GestureDetector(
           onTap: () {
+            if (authController.isLoggedIn.value == false) {
+              Get.snackbar(
+                overlayBlur: 0,
+                backgroundColor: primaryColor,
+                colorText: Colors.white,
+                "Login Required",
+                "Please login or register to participate in events.",
+                snackPosition: SnackPosition.BOTTOM,
+              );
+              return;
+            }
             if (!event.hasReachedCapacity) {
               Get.snackbar(
                 overlayBlur: 0,
@@ -331,14 +344,18 @@ class EventDetailPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
-              child: TextGlobalWidget(
-                text:
-                    event.hasReachedCapacity
-                        ? "Event Full"
-                        : "Register for Event",
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                fontColor: Colors.white,
+              child: Obx(
+                () => TextGlobalWidget(
+                  text:
+                      (authController.isLoggedIn.value == true)
+                          ? event.hasReachedCapacity
+                              ? "Full"
+                              : "Register"
+                          : "Login or register first",
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  fontColor: Colors.white,
+                ),
               ),
             ),
           ),
