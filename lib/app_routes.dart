@@ -17,18 +17,18 @@ class AppRoutes {
     GetPage(
       name: splash,
       page: () => const SplashPage(),
-      transition: Transition.leftToRight,
+      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: home,
       page: () => const HomePage(),
       binding: HomeBinding(),
-      transition: Transition.leftToRight,
+      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: eventDetail,
       page: () => const EventDetailPage(),
-      transition: Transition.leftToRight,
+      transition: Transition.rightToLeft,
     ),
     // GetPage(name: eventDetail, page: () => const EventDetailPage()),
     // GetPage(name: createEvent, page: () => const CreateEventPage()),
