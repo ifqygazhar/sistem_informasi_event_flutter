@@ -43,20 +43,25 @@ class ManajementOnlyAdminWidget extends StatelessWidget {
           ),
         ),
         SizedBox(height: sizeHeight * 0.008),
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: sizeWidth * 0.03),
-          padding: EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.red,
-            borderRadius: BorderRadius.circular(sizeHeight * 0.01),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.person, color: Colors.white),
-              SizedBox(width: sizeWidth * 0.01),
-              TextGlobalWidget(text: "Manajemen Users", fontSize: 14),
-            ],
+        GestureDetector(
+          onTap: () {
+            Get.toNamed(AppRoutes.userManagement);
+          },
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: sizeWidth * 0.03),
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(sizeHeight * 0.01),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.person, color: Colors.white),
+                SizedBox(width: sizeWidth * 0.01),
+                TextGlobalWidget(text: "Manajemen Users", fontSize: 14),
+              ],
+            ),
           ),
         ),
         SizedBox(height: sizeHeight * 0.01),

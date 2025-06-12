@@ -4,6 +4,9 @@
 @baseUrl = http://127.0.0.1:8000/api
 @contentType = application/json
 
+@adminToken = 6|zya2fMjGcazlTYxEYWHJhps3tLcEZ5WPRnNUylNPc7aadebe
+@userToken = 2|NSO2mthMZ6nDZbQghXIqZIbyfxmuEufgKisA1kYba1987eba
+
 ### 1. Register User
 POST {{baseUrl}}/register
 Content-Type: {{contentType}}
@@ -22,7 +25,7 @@ Content-Type: {{contentType}}
 Accept: {{contentType}}
 
 {
-  "email": "ifqy2@test.com",
+  "email": "ifqy@test.com",
   "password": "torabika"
 }
 
@@ -115,7 +118,155 @@ POST {{baseUrl}}/logout
 Accept: {{contentType}}
 Authorization: Bearer 2|NSO2mthMZ6nDZbQghXIqZIbyfxmuEufgKisA1kYba1987eba
 
-### 14. Get All Users (Admin Only - Protected)
+### 15. Get All Users (Admin Only - Protected)
 GET {{baseUrl}}/users
 Accept: {{contentType}}
-Authorization: Bearer 5|8bVE4udSemqAWMU30gHyRukJGvoPnbfnT0XwNSQ07acbc745
+Authorization: Bearer {{adminToken}}
+
+### 16. Create New User (Admin Only - Protected)
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "New User Admin",
+  "email": "newuser@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "role": "user"
+}
+
+### 17. Create New Admin User (Admin Only - Protected)
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "New Admin User",
+  "email": "newadmin@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "role": "admin"
+}
+
+### 18. Get Specific User (Admin Only - Protected)
+GET {{baseUrl}}/users/1
+Accept: {{contentType}}
+Authorization: Bearer {{adminToken}}
+
+### 19. Update User (Admin Only - Protected)
+PUT {{baseUrl}}/users/2
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "Updated User Name",
+  "email": "updated@example.com",
+  "role": "user"
+}
+
+### 20. Update User with Password (Admin Only - Protected)
+PUT {{baseUrl}}/users/2
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "Updated User Name",
+  "email": "updated@example.com",
+  "password": "newpassword123",
+  "password_confirmation": "newpassword123",
+  "role": "user"
+}
+
+### 21. Change User Role to Admin (Admin Only - Protected)
+PUT {{baseUrl}}/users/2
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "User Name",
+  "email": "user@example.com",
+  "role": "admin"
+}
+
+### 22. Delete User (Admin Only - Protected)
+DELETE {{baseUrl}}/users/3
+Accept: {{contentType}}
+Authorization: Bearer {{adminToken}}
+
+### 23. Get All Users - Unauthorized (Regular User - Should Fail)
+GET {{baseUrl}}/users
+Accept: {{contentType}}
+Authorization: Bearer {{userToken}}
+
+### 24. Create User - Unauthorized (Regular User - Should Fail)
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+Authorization: Bearer {{userToken}}
+
+{
+  "name": "Unauthorized User",
+  "email": "unauthorized@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "role": "user"
+}
+
+### 25. Update User - Unauthorized (Regular User trying to update other user - Should Fail)
+PUT {{baseUrl}}/users/1
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+Authorization: Bearer {{userToken}}
+
+{
+  "name": "Unauthorized Update",
+  "email": "unauthorized@example.com",
+  "role": "admin"
+}
+
+### 26. Delete User - Unauthorized (Regular User - Should Fail)
+DELETE {{baseUrl}}/users/1
+Accept: {{contentType}}
+Authorization: Bearer {{userToken}}
+
+### 27. Admin Self-Deletion Attempt (Should Fail)
+DELETE {{baseUrl}}/users/1
+Accept: {{contentType}}
+Authorization: Bearer {{adminToken}}
+
+### 28. Create User with Invalid Data (Admin - Should Fail)
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "",
+  "email": "invalid-email",
+  "password": "123",
+  "password_confirmation": "different",
+  "role": "invalid_role"
+}
+
+### 29. Update User with Invalid Email (Admin - Should Fail)
+PUT {{baseUrl}}/users/2
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "Valid Name",
+  "email": "invalid-email-format",
+  "role": "user"
+}
+
+### 30. Get Non-existent User (Admin - Should Fail)
+GET {{baseUrl}}/users/999
+Accept: {{contentType}}
+Authorization: Bearer {{adminToken}}

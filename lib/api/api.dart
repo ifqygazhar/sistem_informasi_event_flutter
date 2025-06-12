@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:sistem_informasi/models/event.dart';
+import 'package:sistem_informasi/models/user_management.dart' as UserManagement;
 import 'package:sistem_informasi/models/user.dart' as UserModel;
 import 'package:sistem_informasi/service/storage.dart';
 import 'dart:convert';
@@ -31,6 +32,28 @@ class ApiService {
     }
 
     return headers;
+  }
+
+  static void _handleError(http.Response response) {
+    final Map<String, dynamic> errorData = json.decode(response.body);
+
+    if (errorData.containsKey('errors')) {
+      // Validation errors
+      final Map<String, dynamic> errors = errorData['errors'];
+      final List<String> errorMessages = [];
+
+      errors.forEach((field, messages) {
+        if (messages is List) {
+          errorMessages.addAll(messages.cast<String>());
+        }
+      });
+
+      throw Exception(errorMessages.join(', '));
+    } else if (errorData.containsKey('message')) {
+      throw Exception(errorData['message']);
+    } else {
+      throw Exception('An error occurred: ${response.statusCode}');
+    }
   }
 
   // Register
@@ -375,6 +398,189 @@ class ApiService {
     } catch (e) {
       debugPrint('Error deleting event: $e');
       throw Exception('Delete event error: $e');
+    }
+  }
+
+  /// Get all users (Admin only)
+  static Future<Map<String, dynamic>> getUsers({int page = 1}) async {
+    try {
+      final headers = await getHeaders(requireAuth: true);
+      final response = await http.get(
+        Uri.parse('$baseUrl/users?page=$page'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        // Debug print untuk melihat struktur response
+        if (kDebugMode) {
+          print('Users response structure: ${responseData.keys}');
+          print('Data structure: ${responseData['data'].runtimeType}');
+          if (responseData['data'] is Map) {
+            print('Data keys: ${responseData['data'].keys}');
+          }
+        }
+
+        // Berdasarkan sample response, data users ada di data.data
+        final Map<String, dynamic> paginationData = responseData['data'];
+        final List<dynamic> usersData = paginationData['data'] ?? [];
+
+        // Parse users
+        final List<UserManagement.User> users =
+            usersData
+                .map(
+                  (userJson) => UserManagement.User.fromJson(
+                    userJson as Map<String, dynamic>,
+                  ),
+                )
+                .toList();
+
+        // Parse pagination info - gunakan data pagination dari response
+        final UserManagement.PaginationInfo pagination = UserManagement
+            .PaginationInfo.fromJson(paginationData);
+
+        return {'users': users, 'pagination': pagination};
+      } else {
+        _handleError(response);
+        return {'users': <UserManagement.User>[], 'pagination': null};
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error getting users: $e');
+      }
+      rethrow;
+    }
+  }
+
+  /// Get specific user (Admin only)
+  static Future<UserManagement.User> getUser(int userId) async {
+    try {
+      final headers = await getHeaders(requireAuth: true);
+      final response = await http.get(
+        Uri.parse('$baseUrl/users/$userId'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return UserManagement.User.fromJson(data['data']);
+      } else {
+        _handleError(response);
+        throw Exception('Failed to get user');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error getting user: $e');
+      }
+      rethrow;
+    }
+  }
+
+  /// Create new user (Admin only)
+  static Future<UserManagement.User> createUser({
+    required String name,
+    required String email,
+    required String password,
+    required String passwordConfirmation,
+    required String role,
+  }) async {
+    try {
+      final headers = await getHeaders(requireAuth: true);
+      final body = json.encode({
+        'name': name,
+        'email': email,
+        'password': password,
+        'password_confirmation': passwordConfirmation,
+        'role': role,
+      });
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/users'),
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == 201) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return UserManagement.User.fromJson(data['data']);
+      } else {
+        _handleError(response);
+        throw Exception('Failed to create user');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error creating user: $e');
+      }
+      rethrow;
+    }
+  }
+
+  /// Update user (Admin only)
+  static Future<UserManagement.User> updateUser({
+    required int userId,
+    required String name,
+    required String email,
+    required String role,
+    String? password,
+    String? passwordConfirmation,
+  }) async {
+    try {
+      final headers = await getHeaders(requireAuth: true);
+      final Map<String, dynamic> bodyData = {
+        'name': name,
+        'email': email,
+        'role': role,
+      };
+
+      // Add password fields if provided
+      if (password != null && password.isNotEmpty) {
+        bodyData['password'] = password;
+        bodyData['password_confirmation'] = passwordConfirmation ?? password;
+      }
+
+      final body = json.encode(bodyData);
+
+      final response = await http.put(
+        Uri.parse('$baseUrl/users/$userId'),
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return UserManagement.User.fromJson(data['data']);
+      } else {
+        _handleError(response);
+        throw Exception('Failed to update user');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error updating user: $e');
+      }
+      rethrow;
+    }
+  }
+
+  /// Delete user (Admin only)
+  static Future<void> deleteUser(int userId) async {
+    try {
+      final headers = await getHeaders(requireAuth: true);
+      final response = await http.delete(
+        Uri.parse('$baseUrl/users/$userId'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return;
+      } else {
+        _handleError(response);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error deleting user: $e');
+      }
+      rethrow;
     }
   }
 }

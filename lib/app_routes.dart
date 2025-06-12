@@ -9,6 +9,8 @@ import 'package:sistem_informasi/pages/event/event_management.dart';
 import 'package:sistem_informasi/pages/home/binding/home_binding.dart';
 import 'package:sistem_informasi/pages/home/home.dart';
 import 'package:sistem_informasi/pages/splash/splash.dart';
+import 'package:sistem_informasi/pages/user/binding/user_binding.dart';
+import 'package:sistem_informasi/pages/user/user_management.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -19,6 +21,7 @@ class AppRoutes {
   static const String eventManagement = '/event-management';
   static const String createEvent = '/create-event';
   static const String editEvent = '/edit-event';
+  static const String userManagement = '/user-management';
 
   static final routes = [
     GetPage(
@@ -64,6 +67,12 @@ class AppRoutes {
       page: () => const EventCreatedAndEditWidget(),
       transition: Transition.rightToLeft,
       binding: EventBinding(),
+    ),
+    GetPage(
+      name: userManagement,
+      page: () => const UserManagementPage(),
+      transition: Transition.rightToLeft,
+      binding: UserBinding(),
     ),
   ];
 }
