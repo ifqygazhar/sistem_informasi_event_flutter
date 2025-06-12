@@ -2,7 +2,9 @@ import 'package:get/route_manager.dart';
 import 'package:sistem_informasi/pages/auth/binding/auth_binding.dart';
 import 'package:sistem_informasi/pages/auth/login.dart';
 import 'package:sistem_informasi/pages/auth/register.dart';
+import 'package:sistem_informasi/pages/event/binding/event_binding.dart';
 import 'package:sistem_informasi/pages/event/event_detail.dart';
+import 'package:sistem_informasi/pages/event/event_management.dart';
 import 'package:sistem_informasi/pages/home/binding/home_binding.dart';
 import 'package:sistem_informasi/pages/home/home.dart';
 import 'package:sistem_informasi/pages/splash/splash.dart';
@@ -13,6 +15,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String eventDetail = '/event/:id';
+  static const String eventManagement = '/event-management';
   static const String createEvent = '/create-event';
   static const String editEvent = '/edit-event';
 
@@ -43,7 +46,12 @@ class AppRoutes {
       page: () => const RegisterPage(),
       transition: Transition.rightToLeft,
     ),
-
+    GetPage(
+      name: eventManagement,
+      page: () => const EventManagementPage(),
+      transition: Transition.rightToLeft,
+      binding: EventBinding(),
+    ),
     // GetPage(name: createEvent, page: () => const CreateEventPage()),
     // GetPage(name: editEvent, page: () => const EditEventPage()),
   ];

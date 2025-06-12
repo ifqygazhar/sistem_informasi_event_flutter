@@ -75,7 +75,7 @@ Authorization: Bearer 5|8bVE4udSemqAWMU30gHyRukJGvoPnbfnT0XwNSQ07acbc745
 ### 9. Get My Events (Protected)
 GET {{baseUrl}}/events/my-events
 Accept: {{contentType}}
-Authorization: Bearer 2|NSO2mthMZ6nDZbQghXIqZIbyfxmuEufgKisA1kYba1987eba
+Authorization: Bearer 33|Hx9dD7lzaBAEls5HQVsQdF1j8y1CQsPHo2T4fWIS8abdff8a
 
 ### 10. Register for Event (Protected)
 POST {{baseUrl}}/events/1/register

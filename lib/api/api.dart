@@ -205,4 +205,131 @@ class ApiService {
       }
     }
   }
+
+  // Get My Events (Protected)
+  static Future<Map<String, dynamic>> getMyEvents({int page = 1}) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/events/my-events?page=$page'),
+        headers: await getHeaders(requireAuth: true),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final List<dynamic> eventsData = data['data'] ?? [];
+        final Map<String, dynamic> paginationData = data['pagination'] ?? {};
+
+        return {
+          'events': eventsData.map((json) => Event.fromJson(json)).toList(),
+          'pagination': PaginationInfo.fromJson(paginationData),
+        };
+      } else {
+        throw Exception('Failed to load my events: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Error fetching my events: $e');
+      throw Exception('Error fetching my events: $e');
+    }
+  }
+
+  // Create Event (Protected)
+  static Future<Event> createEvent({
+    required String title,
+    required String description,
+    required String startDate,
+    required String endDate,
+    required String location,
+    int? maxParticipants,
+    String? image,
+    String status = 'published',
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/events'),
+        headers: await getHeaders(requireAuth: true),
+        body: json.encode({
+          'title': title,
+          'description': description,
+          'start_date': startDate,
+          'end_date': endDate,
+          'location': location,
+          'max_participants': maxParticipants,
+          'image': image,
+          'status': status,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return Event.fromJson(data['data']);
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to create event');
+      }
+    } catch (e) {
+      debugPrint('Error creating event: $e');
+      throw Exception('Create event error: $e');
+    }
+  }
+
+  // Update Event (Protected)
+  static Future<Event> updateEvent({
+    required int eventId,
+    required String title,
+    required String description,
+    required String startDate,
+    required String endDate,
+    required String location,
+    int? maxParticipants,
+    String? image,
+    String status = 'published',
+  }) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/events/$eventId'),
+        headers: await getHeaders(requireAuth: true),
+        body: json.encode({
+          'title': title,
+          'description': description,
+          'start_date': startDate,
+          'end_date': endDate,
+          'location': location,
+          'max_participants': maxParticipants,
+          'image': image,
+          'status': status,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return Event.fromJson(data['data']);
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to update event');
+      }
+    } catch (e) {
+      debugPrint('Error updating event: $e');
+      throw Exception('Update event error: $e');
+    }
+  }
+
+  // Delete Event (Protected)
+  static Future<void> deleteEvent(int eventId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/events/$eventId'),
+        headers: await getHeaders(requireAuth: true),
+      );
+
+      if (response.statusCode == 200) {
+        return;
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to delete event');
+      }
+    } catch (e) {
+      debugPrint('Error deleting event: $e');
+      throw Exception('Delete event error: $e');
+    }
+  }
 }
