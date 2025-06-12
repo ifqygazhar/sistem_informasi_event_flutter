@@ -3,6 +3,7 @@ import 'package:sistem_informasi/pages/auth/binding/auth_binding.dart';
 import 'package:sistem_informasi/pages/auth/login.dart';
 import 'package:sistem_informasi/pages/auth/register.dart';
 import 'package:sistem_informasi/pages/event/binding/event_binding.dart';
+import 'package:sistem_informasi/pages/event/event_created_and_edit.dart';
 import 'package:sistem_informasi/pages/event/event_detail.dart';
 import 'package:sistem_informasi/pages/event/event_management.dart';
 import 'package:sistem_informasi/pages/home/binding/home_binding.dart';
@@ -52,7 +53,17 @@ class AppRoutes {
       transition: Transition.rightToLeft,
       binding: EventBinding(),
     ),
-    // GetPage(name: createEvent, page: () => const CreateEventPage()),
-    // GetPage(name: editEvent, page: () => const EditEventPage()),
+    GetPage(
+      name: createEvent,
+      page: () => const EventCreatedAndEditWidget(),
+      transition: Transition.rightToLeft,
+      binding: EventBinding(),
+    ),
+    GetPage(
+      name: editEvent,
+      page: () => const EventCreatedAndEditWidget(),
+      transition: Transition.rightToLeft,
+      binding: EventBinding(),
+    ),
   ];
 }

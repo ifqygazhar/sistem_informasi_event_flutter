@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sistem_informasi/app_routes.dart';
 import 'package:sistem_informasi/pages/event/controller/event_controller.dart';
 import 'package:sistem_informasi/pages/event/widget/event_management_item.dart';
 import 'package:sistem_informasi/utils/colors.dart';
@@ -10,7 +11,7 @@ class EventManagementPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(EventManagementController());
+    final controller = Get.find<EventManagementController>();
     final double sizeHeight = MediaQuery.of(context).size.height;
     final double sizeWidth = MediaQuery.of(context).size.width;
 
@@ -32,21 +33,6 @@ class EventManagementPage extends StatelessWidget {
           fontWeight: FontWeight.bold,
           fontColor: primaryColor,
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: primaryColor),
-            onPressed: () {
-              // Navigate to create event page
-              // Get.toNamed(AppRoutes.createEvent);
-              Get.snackbar(
-                'Info',
-                'Create event feature coming soon',
-                backgroundColor: Colors.blue,
-                colorText: Colors.white,
-              );
-            },
-          ),
-        ],
       ),
       body: RefreshIndicator(
         onRefresh: controller.refreshEvents,
@@ -137,13 +123,7 @@ class EventManagementPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to create event
-          Get.snackbar(
-            'Info',
-            'Create event feature coming soon',
-            backgroundColor: Colors.blue,
-            colorText: Colors.white,
-          );
+          Get.toNamed(AppRoutes.createEvent);
         },
         backgroundColor: primaryColor,
         child: const Icon(Icons.add, color: Colors.white),

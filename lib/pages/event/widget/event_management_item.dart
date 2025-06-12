@@ -171,7 +171,7 @@ class EventManagementItem extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          _showEditDialog(context, event, controller);
+                          Get.toNamed(AppRoutes.editEvent, arguments: event);
                         },
                         icon: const Icon(Icons.edit, size: 16),
                         label: const Text('Edit'),
@@ -220,51 +220,5 @@ class EventManagementItem extends StatelessWidget {
       default:
         return Colors.grey;
     }
-  }
-
-  void _showEditDialog(
-    BuildContext context,
-    Event event,
-    EventManagementController controller,
-  ) {
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Edit Event Status'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: const Text('Published'),
-              leading: Radio<String>(
-                value: 'published',
-                groupValue: event.status,
-                onChanged: (value) {
-                  Get.back();
-                  if (value != null) {
-                    controller.updateEventStatus(event.id, value);
-                  }
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text('Draft'),
-              leading: Radio<String>(
-                value: 'draft',
-                groupValue: event.status,
-                onChanged: (value) {
-                  Get.back();
-                  if (value != null) {
-                    controller.updateEventStatus(event.id, value);
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
-        ],
-      ),
-    );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sistem_informasi/models/event.dart';
@@ -11,11 +13,15 @@ class ApiService {
   // Get headers with auth token
   static Future<Map<String, String>> getHeaders({
     bool requireAuth = false,
+    bool isMultipart = false,
   }) async {
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
+    Map<String, String> headers = {};
+
+    if (!isMultipart) {
+      headers['Content-Type'] = 'application/json';
+    }
+
+    headers['Accept'] = 'application/json';
 
     if (requireAuth) {
       final token = await StorageService.getToken();
@@ -232,32 +238,48 @@ class ApiService {
     }
   }
 
-  // Create Event (Protected)
   static Future<Event> createEvent({
     required String title,
     required String description,
     required String startDate,
     required String endDate,
     required String location,
-    int? maxParticipants,
-    String? image,
+    String? maxParticipants,
+    File? image,
     String status = 'published',
   }) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/events'),
-        headers: await getHeaders(requireAuth: true),
-        body: json.encode({
-          'title': title,
-          'description': description,
-          'start_date': startDate,
-          'end_date': endDate,
-          'location': location,
-          'max_participants': maxParticipants,
-          'image': image,
-          'status': status,
-        }),
+      var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/events'));
+
+      // Add headers
+      request.headers.addAll(
+        await getHeaders(requireAuth: true, isMultipart: true),
       );
+
+      // Add text fields
+      request.fields['title'] = title;
+      request.fields['description'] = description;
+      request.fields['start_date'] = startDate;
+      request.fields['end_date'] = endDate;
+      request.fields['location'] = location;
+      request.fields['status'] = status;
+
+      // Fix: Convert int to string for multipart request
+      if (maxParticipants != null) {
+        request.fields['capacity'] = maxParticipants;
+      }
+
+      // Add image file if provided
+      if (image != null && await image.exists()) {
+        var multipartFile = await http.MultipartFile.fromPath(
+          'image',
+          image.path,
+        );
+        request.files.add(multipartFile);
+      }
+
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 201) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -272,7 +294,7 @@ class ApiService {
     }
   }
 
-  // Update Event (Protected)
+  // Update Event (Protected) - Updated with multipart support
   static Future<Event> updateEvent({
     required int eventId,
     required String title,
@@ -280,25 +302,48 @@ class ApiService {
     required String startDate,
     required String endDate,
     required String location,
-    int? maxParticipants,
-    String? image,
+    String? maxParticipants,
+    File? image,
     String status = 'published',
   }) async {
     try {
-      final response = await http.put(
+      var request = http.MultipartRequest(
+        'POST', // Menggunakan POST dengan _method field untuk PUT
         Uri.parse('$baseUrl/events/$eventId'),
-        headers: await getHeaders(requireAuth: true),
-        body: json.encode({
-          'title': title,
-          'description': description,
-          'start_date': startDate,
-          'end_date': endDate,
-          'location': location,
-          'max_participants': maxParticipants,
-          'image': image,
-          'status': status,
-        }),
       );
+
+      // Add headers
+      request.headers.addAll(
+        await getHeaders(requireAuth: true, isMultipart: true),
+      );
+
+      // Add method override for PUT
+      request.fields['_method'] = 'PUT';
+
+      // Add text fields
+      request.fields['title'] = title;
+      request.fields['description'] = description;
+      request.fields['start_date'] = startDate;
+      request.fields['end_date'] = endDate;
+      request.fields['location'] = location;
+      request.fields['status'] = status;
+
+      // Fix: Convert int to string for multipart request
+      if (maxParticipants != null) {
+        request.fields['capacity'] = maxParticipants;
+      }
+
+      // Add image file if provided
+      if (image != null && await image.exists()) {
+        var multipartFile = await http.MultipartFile.fromPath(
+          'image',
+          image.path,
+        );
+        request.files.add(multipartFile);
+      }
+
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
