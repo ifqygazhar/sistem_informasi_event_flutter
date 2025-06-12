@@ -238,47 +238,8 @@ class EventFormController extends GetxController {
                 pickImageFromCamera();
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.link, color: Colors.orange),
-              title: const Text('URL'),
-              onTap: () {
-                Get.back();
-                _showUrlDialog();
-              },
-            ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _showUrlDialog() {
-    final TextEditingController urlController = TextEditingController(
-      text: imageController.text,
-    );
-
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Enter Image URL'),
-        content: TextField(
-          controller: urlController,
-          decoration: const InputDecoration(
-            hintText: 'https://example.com/image.jpg',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
-          TextButton(
-            onPressed: () {
-              imageController.text = urlController.text;
-              selectedImage.value = null;
-              imageSource.value = 'url';
-              Get.back();
-            },
-            child: const Text('OK'),
-          ),
-        ],
       ),
     );
   }
@@ -388,6 +349,28 @@ class EventFormController extends GetxController {
     return true;
   }
 
+  // Method untuk refresh semua controller event yang terdaftar
+  void _refreshAllEventControllers() {
+    // Refresh Event Management Controller jika terdaftar
+    if (Get.isRegistered<EventManagementController>()) {
+      try {
+        Get.find<EventManagementController>().refreshEvents();
+      } catch (e) {
+        debugPrint('Error refreshing EventManagementController: $e');
+      }
+    }
+
+    // Jika ada controller event lainnya, tambahkan di sini
+    // Contoh:
+    // if (Get.isRegistered<EventListController>()) {
+    //   try {
+    //     Get.find<EventListController>().refreshEvents();
+    //   } catch (e) {
+    //     debugPrint('Error refreshing EventListController: $e');
+    //   }
+    // }
+  }
+
   Future<void> saveEvent() async {
     if (!formKey.currentState!.validate()) return;
     if (!_validateDates()) return;
@@ -433,6 +416,7 @@ class EventFormController extends GetxController {
           backgroundColor: Colors.green,
           colorText: Colors.white,
           snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 2),
         );
       } else {
         // Create new event
@@ -453,16 +437,18 @@ class EventFormController extends GetxController {
           backgroundColor: Colors.green,
           colorText: Colors.white,
           snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 2),
         );
       }
 
-      // Go back and refresh
-      Get.back();
+      // Refresh semua controller yang terdaftar sebelum kembali
+      _refreshAllEventControllers();
 
-      // Refresh event management if available
-      if (Get.isRegistered<EventManagementController>()) {
-        Get.find<EventManagementController>().refreshEvents();
-      }
+      // Kembali ke halaman sebelumnya setelah delay singkat untuk memastikan refresh selesai
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Kembali ke route sebelumnya
+      Get.back(result: true); // result: true menandakan operasi berhasil
     } catch (e) {
       Get.snackbar(
         'Error',

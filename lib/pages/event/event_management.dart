@@ -22,7 +22,7 @@ class EventManagementPage extends StatelessWidget {
             Icons.arrow_back_ios_new_rounded,
             color: primaryColor,
           ),
-          onPressed: () => Get.back(),
+          onPressed: () => Get.back(result: true),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -62,14 +62,13 @@ class EventManagementPage extends StatelessWidget {
                   ),
                   SizedBox(height: sizeHeight * 0.03),
                   ElevatedButton.icon(
-                    onPressed: () {
-                      // Navigate to create event
-                      Get.snackbar(
-                        'Info',
-                        'Create event feature coming soon',
-                        backgroundColor: Colors.blue,
-                        colorText: Colors.white,
-                      );
+                    onPressed: () async {
+                      final result = await Get.toNamed(AppRoutes.createEvent);
+                      // Jika ada result dan berhasil, refresh akan otomatis terjadi
+                      // karena sudah di-handle di EventFormController
+                      if (result == true) {
+                        // Optional: tambahan aksi jika diperlukan
+                      }
                     },
                     icon: const Icon(Icons.add),
                     label: const Text('Create Event'),
@@ -122,8 +121,8 @@ class EventManagementPage extends StatelessWidget {
         }),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.toNamed(AppRoutes.createEvent);
+        onPressed: () async {
+          await Get.toNamed(AppRoutes.createEvent);
         },
         backgroundColor: primaryColor,
         child: const Icon(Icons.add, color: Colors.white),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sistem_informasi/app_routes.dart';
+import 'package:sistem_informasi/pages/home/controller/home_controller.dart';
 import 'package:sistem_informasi/utils/text.dart';
 
 class ManajementOnlyAdminWidget extends StatelessWidget {
@@ -13,11 +14,17 @@ class ManajementOnlyAdminWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<HomeController>();
     return Column(
       children: [
         SizedBox(height: sizeHeight * 0.002),
         GestureDetector(
-          onTap: () => Get.toNamed(AppRoutes.eventManagement),
+          onTap: () async {
+            final result = await Get.toNamed(AppRoutes.eventManagement);
+            if (result == true) {
+              controller.refreshEvents();
+            }
+          },
           child: Container(
             margin: EdgeInsets.symmetric(horizontal: sizeWidth * 0.03),
             padding: EdgeInsets.all(8),

@@ -6,7 +6,7 @@ class Event {
   final String endDate;
   final String location;
   final String? image;
-  final int? capacity;
+  final String? capacity;
   final String status;
   final int participantsCount;
   final bool hasReachedCapacity;

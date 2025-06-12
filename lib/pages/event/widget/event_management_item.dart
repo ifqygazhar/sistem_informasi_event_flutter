@@ -170,8 +170,11 @@ class EventManagementItem extends StatelessWidget {
                     // Edit Button
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          Get.toNamed(AppRoutes.editEvent, arguments: event);
+                        onPressed: () async {
+                          await Get.toNamed(
+                            AppRoutes.editEvent,
+                            arguments: event,
+                          );
                         },
                         icon: const Icon(Icons.edit, size: 16),
                         label: const Text('Edit'),

@@ -8,6 +8,7 @@ class HomeController extends GetxController {
   final events = <Event>[].obs;
   final isLoading = false.obs;
   final isLoadingMore = false.obs;
+  final isRefreshing = false.obs; // Add this for refresh state
   final hasError = false.obs;
   final errorMessage = ''.obs;
 
@@ -48,9 +49,11 @@ class HomeController extends GetxController {
         currentPage.value = 1;
         hasMorePages.value = true;
         events.clear();
+        isRefreshing.value = true;
+      } else {
+        isLoading.value = true;
       }
 
-      isLoading.value = true;
       hasError.value = false;
       errorMessage.value = '';
 
@@ -67,18 +70,39 @@ class HomeController extends GetxController {
       }
 
       hasMorePages.value = pagination.hasMorePages;
+
+      // Show success message on refresh
+      if (refresh) {
+        Get.snackbar(
+          'Success',
+          'Events refreshed successfully',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+        );
+      }
     } catch (e) {
       hasError.value = true;
       errorMessage.value = e.toString();
+
+      // Different error messages for refresh vs initial load
+      final String errorTitle = refresh ? 'Refresh Failed' : 'Error';
+      final String errorMsg =
+          refresh
+              ? 'Failed to refresh events: ${e.toString()}'
+              : 'Failed to load events: ${e.toString()}';
+
       Get.snackbar(
-        'Error',
-        'Failed to load events: ${e.toString()}',
+        errorTitle,
+        errorMsg,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
     } finally {
       isLoading.value = false;
+      isRefreshing.value = false;
     }
   }
 
