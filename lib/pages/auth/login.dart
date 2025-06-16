@@ -124,9 +124,9 @@ class _LoginPageState extends State<LoginPage> {
                     onTap:
                         authController.isLoading.value
                             ? null
-                            : () {
+                            : () async {
                               if (formKey.currentState!.validate()) {
-                                authController.login(
+                                await authController.login(
                                   email: emailController.text.trim(),
                                   password: passwordController.text,
                                 );

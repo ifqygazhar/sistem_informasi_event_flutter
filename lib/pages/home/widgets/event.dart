@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sistem_informasi/api/api.dart';
@@ -28,7 +29,11 @@ class EventWidget extends StatelessWidget {
         Get.toNamed(AppRoutes.eventDetail, arguments: event);
       },
       child: Container(
-        margin: const EdgeInsets.all(8),
+        width: double.infinity,
+        margin: EdgeInsets.symmetric(
+          horizontal: sizeWidth * 0.03,
+          vertical: sizeHeight * 0.01,
+        ),
         padding: const EdgeInsets.only(bottom: 8),
         decoration: BoxDecoration(
           color: primaryColor,
@@ -66,7 +71,9 @@ class EventWidget extends StatelessWidget {
             ),
 
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: sizeWidth * 0.03),
+              padding: EdgeInsets.symmetric(
+                horizontal: kIsWeb ? sizeWidth * 0.01 : sizeWidth * 0.03,
+              ),
               child: Row(
                 children: [
                   Expanded(
@@ -91,7 +98,9 @@ class EventWidget extends StatelessWidget {
             ),
 
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: sizeWidth * 0.03),
+              padding: EdgeInsets.symmetric(
+                horizontal: kIsWeb ? sizeWidth * 0.01 : sizeWidth * 0.03,
+              ),
               child: Row(
                 children: [
                   const Icon(Icons.person, color: Colors.white, size: 16),
@@ -118,7 +127,9 @@ class EventWidget extends StatelessWidget {
             ),
 
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: sizeWidth * 0.03),
+              padding: EdgeInsets.symmetric(
+                horizontal: kIsWeb ? sizeWidth * 0.01 : sizeWidth * 0.03,
+              ),
               child: TextGlobalWidget(
                 text: event.description,
                 fontSize: 14,
@@ -129,7 +140,9 @@ class EventWidget extends StatelessWidget {
             ),
 
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: sizeWidth * 0.03),
+              padding: EdgeInsets.symmetric(
+                horizontal: kIsWeb ? sizeWidth * 0.01 : sizeWidth * 0.03,
+              ),
               child: GestureDetector(
                 onTap: () async {
                   if (!authController.isLoggedIn.value) {

@@ -39,11 +39,23 @@ class StorageService {
   static Future<void> clearAuthData() async {
     await _storage.delete(key: _tokenKey);
     await _storage.delete(key: _userKey);
+
+    // Double check - sometimes delete doesn't work properly
+    await _storage.write(key: _tokenKey, value: '');
+    await _storage.write(key: _userKey, value: '');
+    await _storage.delete(key: _tokenKey);
+    await _storage.delete(key: _userKey);
   }
 
   // Check if user is logged in
   static Future<bool> isLoggedIn() async {
     final token = await getToken();
-    return token != null && token.isNotEmpty;
+    final user = await getUser();
+    return token != null && token.isNotEmpty && user != null;
+  }
+
+  // Clear all data (nuclear option)
+  static Future<void> clearAll() async {
+    await _storage.deleteAll();
   }
 }

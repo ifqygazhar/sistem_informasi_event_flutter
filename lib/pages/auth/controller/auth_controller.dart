@@ -16,6 +16,28 @@ class AuthController extends GetxController {
   void onInit() {
     super.onInit();
     checkAuthStatus();
+    // Listen to currentUser changes
+    ever(currentUser, (_) async {
+      final user = await StorageService.getUser();
+      if (user != null) {
+        isAdmin.value = user.role == 'admin';
+        debugPrint(
+          'User changed - isAdmin: ${isAdmin.value}, role: ${user.role}',
+        );
+      } else {
+        isAdmin.value = false;
+        debugPrint('User is null - isAdmin set to false');
+      }
+    });
+
+    // Listen to isLoggedIn changes
+    ever(isLoggedIn, (bool loggedIn) {
+      debugPrint('Login status changed: $loggedIn');
+      if (!loggedIn) {
+        currentUser.value = null;
+        isAdmin.value = false;
+      }
+    });
   }
 
   Future<void> checkAuthStatus() async {
@@ -26,10 +48,13 @@ class AuthController extends GetxController {
       if (loggedIn) {
         final user = await StorageService.getUser();
         currentUser.value = user;
+        debugPrint('Current user data: ${user?.toJson()}');
         if (user != null) {
           isAdmin.value = user.role == 'admin';
+          debugPrint('User is admin: ${isAdmin.value}');
         } else {
           isAdmin.value = false;
+          debugPrint('User data is null, setting isAdmin to false');
         }
       }
     } catch (e) {
@@ -90,12 +115,20 @@ class AuthController extends GetxController {
         password: password,
       );
 
+      debugPrint('Login response: ${authResponse.user.role}');
+
       // Save token and user data
       await StorageService.saveToken(authResponse.token);
       await StorageService.saveUser(authResponse.user);
 
-      currentUser.value = authResponse.user;
+      final user = currentUser.value = authResponse.user;
       isLoggedIn.value = true;
+
+      if (user.role == 'admin') {
+        isAdmin.value = true;
+      } else {
+        isAdmin.value = false;
+      }
 
       Get.offAllNamed(AppRoutes.home);
       Get.snackbar(

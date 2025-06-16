@@ -111,13 +111,16 @@ class HomePage extends StatelessWidget {
                 ],
               ),
               BannerWidget(sizeHeight: sizeHeight, sizeWidth: sizeWidth),
-              authController.isLoggedIn.value == true &&
-                      authController.isAdmin.value == true
-                  ? ManajementOnlyAdminWidget(
+              Obx(() {
+                if (authController.isLoggedIn.value &&
+                    authController.isAdmin.value) {
+                  return ManajementOnlyAdminWidget(
                     sizeHeight: sizeHeight,
                     sizeWidth: sizeWidth,
-                  )
-                  : const SizedBox.shrink(),
+                  );
+                }
+                return const SizedBox.shrink();
+              }),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: sizeWidth * 0.03),
                 child: TextGlobalWidget(
